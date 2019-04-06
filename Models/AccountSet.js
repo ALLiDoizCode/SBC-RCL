@@ -8,6 +8,7 @@ function accountSet(setType, flag) {
     } else {
         tx.SetFlag = flag;
     }
+    return tx
 }
 
 function setRegularKey() {
@@ -15,6 +16,7 @@ function setRegularKey() {
     if (regularKey != null && regularKey != "") {
         tx.RegularKey = regularKey;
     }
+    return tx
 }
 
 function setTrust(noRipple, token) {
@@ -23,4 +25,5 @@ function setTrust(noRipple, token) {
     if (noRipple == false) {
         tx.Flags = 131072;
     }
+    return tx
 }

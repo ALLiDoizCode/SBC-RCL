@@ -41,6 +41,7 @@ function escrowCreate(destination, amount, destinationTag, invoiceID, memos) {
 
         tx.FinishAfter = parseInt(n) - 946684800
     }
+    return tx
 }
 
 function escrowFinish(owner,offerSequence) {
@@ -59,6 +60,7 @@ function escrowFinish(owner,offerSequence) {
     if (memos != undefined) {
         tx.Memos = createMemo(memos)
     }
+    return tx
 }
 
 function escrowCancel(owner,offerSequence) {
@@ -68,4 +70,5 @@ function escrowCancel(owner,offerSequence) {
     if (memos != undefined) {
         tx.Memos = createMemo(memos)
     }
+    return tx
 }
