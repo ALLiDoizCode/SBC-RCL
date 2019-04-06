@@ -1,0 +1,16 @@
+{
+  "name": "rcl-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "blob.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "five-bells-condition": "^5.0.1",
+    "ripple-keypairs": "^0.11.0",
+    "ripple-sign-keypairs": "^1.0.2"
+  }
+}
