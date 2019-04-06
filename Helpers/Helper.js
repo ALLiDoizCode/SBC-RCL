@@ -1,5 +1,5 @@
 const sign = require("ripple-sign-keypairs");
-
+require("../Clients/Client")
 function updateWallet() {
   var sequence = json.result.account_data.Sequence
   let flags = json.result.account_data.Flags;
@@ -25,6 +25,14 @@ function sign(tx, keypair) {
   const txSign = sign(txJSON, keypair);
   console.log(txSign);
   return txSign
+}
+
+function submit(callback,tx) {
+  var keypair = sessionStorage.getItem("keypair")
+  var blob = sign(tx, keypair)
+  send(function(obj){
+    if (callback) callback(obj);
+  },router.submit,blob)
 }
 
 function createAmount(value, currency, issuer) {
