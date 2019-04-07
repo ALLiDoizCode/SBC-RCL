@@ -1,10 +1,23 @@
 const sign = require("ripple-sign-keypairs");
+require("../Models/Routes")
 require("../Clients/Client")
+
 function updateWallet() {
-  var sequence = json.result.account_data.Sequence
-  let flags = json.result.account_data.Flags;
-  sessionStorage.setItem("flags", flags);
-  sessionStorage.setItem("sequence", sequence);
+  var address = sessionStorage.getItem("address")
+  send(function (obj) {
+    let drop = parseFloat(obj.result.account_data.Balance);
+    let ownerCount = parseFloat(obj.result.account_data.OwnerCount);
+    let xrp = drop / 1000000;
+    var sequence = obj.result.account_data.Sequence
+    let flags = obj.result.account_data.Flags;
+    sessionStorage.setItem("xrp", xrp);
+    sessionStorage.setItem("xrp_Minus_Reserve", xrp - (ownerCount * 5 + 20));
+    sessionStorage.setItem("xrp_Owner_Reserve", "" + (ownerCount * 5 + 20));
+    sessionStorage.setItem("flags", flags);
+    sessionStorage.setItem("sequence", sequence);
+  }, router.accountInfo, {
+    "address": address
+  })
 }
 
 function toHex(str) {
@@ -27,21 +40,21 @@ function sign(tx, keypair) {
   return txSign
 }
 
-function submit(callback,tx) {
+function submit(callback, tx) {
   var keypair = sessionStorage.getItem("keypair")
   var blob = sign(tx, keypair)
-  send(function(obj){
+  send(function (obj) {
     if (callback) callback(obj);
-  },router.submit,blob)
+  }, router.submit, blob)
 }
 
 function createAmount(value, currency, issuer) {
   if (currency == undefined || currency == "") return toDrops(value)
 
   return {
-      "currency": currency,
-      "value": value,
-      "issuer": issuer
+    "currency": currency,
+    "value": value,
+    "issuer": issuer
   }
 }
 

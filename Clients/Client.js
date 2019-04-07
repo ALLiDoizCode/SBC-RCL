@@ -3,22 +3,6 @@ var PROD_SERVER = ""
 var TEST_SERVER = ""
 var SERVER = LOCAL_SERVER
 
-var router = 
-{
-    submit:{
-        endpoint:"RCL/submit/",
-        method:"POST"
-    },
-    accountInfo:{
-        endpoint:"RCL/accountInfo/",
-        method:"POST"
-    },
-    accountObjects:{
-        endpoint:"RCL/accountObjects/",
-        method:"POST"
-    }
-}
-
 function send(callback,currentRouter,json) {
     var xhttp = new XMLHttpRequest();
     var token = sessionStorage.getItem('token');

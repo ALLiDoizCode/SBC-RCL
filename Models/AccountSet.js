@@ -27,3 +27,9 @@ function setTrust(noRipple, token) {
     }
     return tx
 }
+
+function depositPreauth(address) {
+    var tx = baseTX("DepositPreauth")
+    tx.Authorize = address
+    return tx
+}
