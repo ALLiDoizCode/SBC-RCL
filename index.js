@@ -26,3 +26,6 @@ exports.history = function (callback, address, currentMarker) {
     router.endpoint(address, currentMarker)
     client.send(callback, router, "")
 }
+client.send(function(obj){
+    console.log(obj)
+}, client.router.accountInfo, "rGaysYqH1iG7YbUKgcaGCsB5dtJfzjmAA6")

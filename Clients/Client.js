@@ -42,7 +42,7 @@ exports.send = function(callback,currentRouter,param) {
     };
     var param = param
     param = encodeURI(param)
-    xhttp.open(currentRouter.method,currentRouter.server+currentRouter.endpoint/param, true);
+    xhttp.open(currentRouter.method,currentRouter.server+currentRouter.endpoint+param, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send();
 }
