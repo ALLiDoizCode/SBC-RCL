@@ -1,10 +1,39 @@
 const sign = require("ripple-sign-keypairs");
-require("../Models/Routes")
-require("../Clients/Client")
+var rippleKeyPairs = require("ripple-keypairs");
+const client = require("../Clients/Client")
 
-function updateWallet() {
-  var address = sessionStorage.getItem("address")
-  send(function (obj) {
+var exports = module.exports = {};
+
+
+exports.NewWallet = function() {
+  const secret = rippleKeyPairs.generateSeed();
+  const keypair = rippleKeyPairs.deriveKeypair(secret);
+  const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
+
+  var wallet = {
+    "secret":secret,
+    "address":address
+  }
+
+  return wallet
+}
+
+exports.walletFromSecret = function(secret) {
+
+  const keypair = rippleKeyPairs.deriveKeypair(secret);
+  const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
+
+  var wallet = {
+    "secret":secret,
+    "address":address
+  }
+
+  return wallet
+
+}
+
+exports.updateWallet = function (address) {
+  client.send(function (obj) {
     let drop = parseFloat(obj.result.account_data.Balance);
     let ownerCount = parseFloat(obj.result.account_data.OwnerCount);
     let xrp = drop / 1000000;
@@ -15,40 +44,37 @@ function updateWallet() {
     sessionStorage.setItem("xrp_Owner_Reserve", "" + (ownerCount * 5 + 20));
     sessionStorage.setItem("flags", flags);
     sessionStorage.setItem("sequence", sequence);
-  }, router.accountInfo, {
-    "address": address
-  })
+  }, client.router.accountInfo,address)
 }
 
-function toHex(str) {
+exports.toHex = function(str) {
   return Buffer.from(str, 'utf8').toString('hex').toUpperCase()
 }
 
-function toDollor(number) {
+exports.toDollor = function(number) {
   return Number(number).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
 
-function toDrops(value) {
+var toDrops = function(value) {
   let drops = parseFloat(value) * 1000000
   return "" + parseInt(drops)
 }
 
-function sign(tx, keypair) {
+exports.toDrops = toDrops
+
+exports.signTX = function(tx, secret) {
+  var keypair = rippleKeyPairs.deriveKeypair(secret);
   const txJSON = JSON.stringify(tx);
   const txSign = sign(txJSON, keypair);
   console.log(txSign);
   return txSign
 }
 
-function submit(callback, tx) {
-  var keypair = sessionStorage.getItem("keypair")
-  var blob = sign(tx, keypair)
-  send(function (obj) {
-    if (callback) callback(obj);
-  }, router.submit, blob)
+exports.submit = function(callback, blob) {
+  client.send(callback,client.router.submit, blob)
 }
 
-function createAmount(value, currency, issuer) {
+exports.createAmount = function(value, currency, issuer) {
   if (currency == undefined || currency == "") return toDrops(value)
 
   return {
@@ -58,7 +84,7 @@ function createAmount(value, currency, issuer) {
   }
 }
 
-function createMemo(memos) {
+exports.createMemo = function(memos) {
   var memoObjects = []
   memos.forEach(function (memo) {
     //console.log(memo);
@@ -73,7 +99,7 @@ function createMemo(memos) {
   return memoObjects
 }
 
-function createPriceEscrowMemo(high, low, highOrLow) {
+exports.createPriceEscrowMemo = function(high, low, highOrLow) {
   var priceMemo;
   if (highOrLow === "high") {
     priceMemo = "SBC Memo: This escrow was created within Harbor with a price-based condition. The user has locked this XRP in escrow until the price reaches $" + toDollor(high) + "/XRP. To learn more or to download Harbor visit https://www.secureblockchains.com"
@@ -85,7 +111,7 @@ function createPriceEscrowMemo(high, low, highOrLow) {
   return priceMemo
 }
 
-function createTimeEscowMemo(value) {
+exports.createTimeEscowMemo = function(value) {
   let timeMemo = "SBC Memo: This escrow was created within Harbor with a time-based condition. To learn more or to download Harbor visit https://www.secureblockchains.com"
   return timeMemo
 }

@@ -1,8 +1,10 @@
-require("./Transactions");
-require("../Helpers/Helper");
+var transaction = require("./Transactions");
+var util = require("../Helpers/Helper");
 
-function payment(destination, amount, destinationTag, invoiceID, memos) {
-    var tx = baseTX("Payment")
+var exports = module.exports = {};
+
+var payment = function (destination, amount, destinationTag, invoiceID, memos) {
+    var tx = transaction.baseTX("Payment")
     tx.Destination = destination
     tx.Amount = amount
     if (destinationTag != undefined) {
@@ -14,13 +16,15 @@ function payment(destination, amount, destinationTag, invoiceID, memos) {
     }
 
     if (memos != undefined) {
-        tx.Memos = createMemo(memos)
+        tx.Memos = util.createMemo(memos)
     }
 
     return tx
 }
 
-function escrowCreate(destination, amount, destinationTag, invoiceID, memos) {
+exports.payment = payment
+
+exports.escrowCreate = function (destination, amount, destinationTag, invoiceID, memos) {
     var tx = payment(destination, amount, destinationTag, invoiceID, memos)
     tx.TransactionType = "EscrowCreate"
     if (finishAfter != undefined) {
@@ -44,8 +48,8 @@ function escrowCreate(destination, amount, destinationTag, invoiceID, memos) {
     return tx
 }
 
-function escrowFinish(owner,offerSequence) {
-    var tx = baseTX("EscrowFinish")
+exports.escrowFinish = function (owner, offerSequence) {
+    var tx = transaction.baseTX("EscrowFinish")
     tx.Owner = owner
     tx.OfferSequence = offerSequence
 
@@ -58,17 +62,17 @@ function escrowFinish(owner,offerSequence) {
     }
 
     if (memos != undefined) {
-        tx.Memos = createMemo(memos)
+        tx.Memos = util.createMemo(memos)
     }
     return tx
 }
 
-function escrowCancel(owner,offerSequence) {
-    var tx = baseTX("EscrowCancel")
+exports.escrowCancel = function (owner, offerSequence) {
+    var tx = transaction.baseTX("EscrowCancel")
     tx.Owner = owner
     tx.OfferSequence = offerSequence
     if (memos != undefined) {
-        tx.Memos = createMemo(memos)
+        tx.Memos = util.createMemo(memos)
     }
     return tx
 }

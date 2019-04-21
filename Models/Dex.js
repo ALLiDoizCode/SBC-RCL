@@ -1,8 +1,8 @@
-require("./Transactions");
-require("../Helpers/Helper");
+var transaction = require("./Transactions");
+var exports = module.exports = {};
 
-function offerCreate(gets, pays, flag) {
-  var tx = baseTX("OfferCreate")
+exports.offerCreate = function (gets, pays, flag) {
+  var tx = transaction.baseTX("OfferCreate")
   tx.TakerGets = gets
   tx.TakerPays = pays
   if (flag != null) {
@@ -11,8 +11,8 @@ function offerCreate(gets, pays, flag) {
   return tx
 }
 
-function offerCancel(offerSequence) {
-  var tx = baseTX("OfferCancel")
+exports.offerCancel = function (offerSequence) {
+  var tx = transaction.baseTX("OfferCancel")
   tx.OfferSequence = offerSequence
   return tx
 }

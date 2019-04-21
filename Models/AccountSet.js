@@ -1,8 +1,9 @@
-require("./Transactions");
-require("../Helpers/Helper");
+const transaction = require("./Transactions");
 
-function accountSet(setType, flag) {
-    var tx = baseTX("AccountSet")
+var exports = module.exports = {};
+
+exports.accountSet = function(setType, flag) {
+    var tx = transaction.baseTX("AccountSet")
     if (setType == 'ClearFlag') {
         tx.ClearFlag = flag;
     } else {
@@ -11,16 +12,16 @@ function accountSet(setType, flag) {
     return tx
 }
 
-function setRegularKey() {
-    var tx = baseTX("AccountSet")
+exports.setRegularKey = function(regularKey) {
+    var tx = transaction.baseTX("AccountSet")
     if (regularKey != null && regularKey != "") {
         tx.RegularKey = regularKey;
     }
     return tx
 }
 
-function setTrust(noRipple, token) {
-    var tx = baseTX("TrustSet")
+exports.setTrust = function(noRipple, token) {
+    var tx = transaction.baseTX("TrustSet")
     tx.LimitAmount = token
     if (noRipple == false) {
         tx.Flags = 131072;
@@ -28,8 +29,8 @@ function setTrust(noRipple, token) {
     return tx
 }
 
-function depositPreauth(address) {
-    var tx = baseTX("DepositPreauth")
+exports.depositPreauth = function(address) {
+    var tx = transaction.baseTX("DepositPreauth")
     tx.Authorize = address
     return tx
 }
