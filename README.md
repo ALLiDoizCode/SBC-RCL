@@ -53,7 +53,7 @@ RCL.submit(function(obj){
 const RCL = require('sbc-rcl')
 
 var drops = RCL.util.toDrops("1.0")
-var XRP = RCL.util.fromDrops("1000000")
+var xrp = RCL.util.fromDrops("1000000")
 var blob = RCL.util.signTX(tx,secret)
 var amount = RCL.util.createAmount(value, currency, issuer)
 var memos = RCL.util.createMemo(["memo text"])
