@@ -5,7 +5,7 @@ const client = require("../Clients/Client")
 var exports = module.exports = {};
 
 
-exports.NewWallet = function() {
+exports.newWallet = function() {
   const secret = rippleKeyPairs.generateSeed();
   const keypair = rippleKeyPairs.deriveKeypair(secret);
   const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
