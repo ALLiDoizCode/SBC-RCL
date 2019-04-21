@@ -47,6 +47,48 @@ RCL.submit(function(obj){
 }, blob.signedTransaction)
 ```
 
+> Escrow
+
+```javascript
+const RCL = require('sbc-rcl')
+
+var tx = RCL.transaction.escrowCreate(account, destination, amount, fee, sequence, memos, destinationTag, invoiceID)
+var tx = RCL.transaction.escrowFinish(owner, account, fee, sequence,offerSequence)
+var tx = RCL.transaction.escrowCancel(owner, account, fee, sequence, offerSequence)
+```
+
+> Account
+
+```javascript
+const RCL = require('sbc-rcl')
+
+var tx = RCL.account.accountSet(setType, account, fee, sequence, flag)
+var tx = RCL.account.setRegularKey(regularKey, account, fee, sequence)
+var tx = RCL.account.setTrust(noRipple, account, fee, sequence, token)
+var tx = RCL.account.depositPreauth(address, account, fee, sequence)
+```
+
+> Dex
+
+```javascript
+const RCL = require('sbc-rcl')
+
+var tx = RCL.dex.offerCreate(account, fee, sequence,gets, pays, flag)
+var tx = RCL.dex.offerCancel(account, fee, sequence,offerSequence)
+```
+
+> Signing
+
+```javascript
+const RCL = require('sbc-rcl')
+
+var blob = RCL.util.signTX(tx,secret)
+
+RCL.submit(function(obj){
+    console.log(obj)
+}, blob.signedTransaction)
+```
+
 > utility
 
 ```javascript
@@ -71,4 +113,5 @@ const RCL = require('sbc-rcl')
 RCL.submit(callback, blob)
 RCL.accountInfo(callback, address)
 RCL.history(callback, address,currentMarker)
+RCL.ws.startSocket(callback,address)
 ```

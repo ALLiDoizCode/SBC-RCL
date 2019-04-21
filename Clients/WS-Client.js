@@ -2,7 +2,7 @@ var util = require("../Helpers/Helper");
 
 var exports = module.exports = {};
 
-var startSocket = function(address) {
+var startSocket = function(callback,address) {
     let channel = {
         "command": "subscribe",
         "accounts":[address]
@@ -21,7 +21,7 @@ var startSocket = function(address) {
             var parsedData = JSON.parse(received_msg);
        
             if (parsedData.transaction != null) {
-                util.updateWallet(address)
+                if (callback) callback(parsedData.transaction);
             } 
         };
     

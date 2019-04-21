@@ -119,21 +119,6 @@ exports.getBellsWithPassword = function(str) {
   return bells;
 }
 
-exports.updateWallet = function (address) {
-  client.send(function (obj) {
-    let drop = parseFloat(obj.result.account_data.Balance);
-    let ownerCount = parseFloat(obj.result.account_data.OwnerCount);
-    let xrp = fromDrops(drop);
-    var sequence = obj.result.account_data.Sequence
-    let flags = obj.result.account_data.Flags;
-    sessionStorage.setItem("xrp", xrp);
-    sessionStorage.setItem("xrp_Minus_Reserve", xrp - (ownerCount * 5 + 20));
-    sessionStorage.setItem("xrp_Owner_Reserve", "" + (ownerCount * 5 + 20));
-    sessionStorage.setItem("flags", flags);
-    sessionStorage.setItem("sequence", sequence);
-  }, client.router.accountInfo,address)
-}
-
 var toHex = function(str) {
   return Buffer.from(str, 'utf8').toString('hex').toUpperCase()
 }
