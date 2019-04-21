@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "five-bells-condition": "^5.0.1",
+    "randombytes": "^2.1.0",
     "ripple-keypairs": "^0.11.0",
     "ripple-sign-keypairs": "^1.0.2",
     "xmlhttprequest": "^1.8.0"

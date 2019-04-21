@@ -1,11 +1,14 @@
 const sign = require("ripple-sign-keypairs");
-var rippleKeyPairs = require("ripple-keypairs");
+const rippleKeyPairs = require("ripple-keypairs");
 const client = require("../Clients/Client")
+const CryptoJS = require("crypto-js");
+const cc = require("five-bells-condition");
+const randomBytes = require('randombytes');
 
 var exports = module.exports = {};
 
 
-exports.newWallet = function() {
+var newWallet = function() {
   const secret = rippleKeyPairs.generateSeed();
   const keypair = rippleKeyPairs.deriveKeypair(secret);
   const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
@@ -18,7 +21,7 @@ exports.newWallet = function() {
   return wallet
 }
 
-exports.walletFromSecret = function(secret) {
+var walletFromSecret = function(secret) {
 
   const keypair = rippleKeyPairs.deriveKeypair(secret);
   const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
@@ -30,6 +33,90 @@ exports.walletFromSecret = function(secret) {
 
   return wallet
 
+}
+
+exports.walletFromSecret = walletFromSecret
+exports.newWallet = newWallet
+
+exports.encryptString = function(secret,password) {
+
+  // Encrypt
+  var ciphertext = CryptoJS.AES.encrypt(secret, password);
+
+  return ciphertext
+
+}
+
+exports.decryptString = function(encryptedSecret,password) {
+  var address;
+  // Decrypt
+  var bytes  = CryptoJS.AES.decrypt(encryptedSecret, password);
+  try {
+    bytes.toString(CryptoJS.enc.Utf8);
+    var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+    if(IsJsonString(plaintext)) {
+      let json = JSON.parse(plaintext);
+      address = walletFromSecret(json.master);
+      address.regular = json.regular
+    }else {
+      address = walletFromSecret(plaintext);
+    }
+  } catch(e) {
+
+      // address = null;
+      // address.regular = null
+
+  }
+  return address
+}
+
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+exports.getBells = function() {
+  const fulfillment_bytes = randomBytes(32);
+  const myFulfillment = new cc.PreimageSha256();
+  myFulfillment.setPreimage(fulfillment_bytes);
+
+  var fulfillment = myFulfillment.serializeBinary().toString('hex')
+  var condition = myFulfillment.getConditionBinary().toString('hex')
+
+  var bells = {
+    "fulfillment":fulfillment,
+    "condition":condition
+  }
+
+  return bells;
+}
+
+exports.getBellsWithPassword = function(str) {
+  var currentStr = str
+  var currentLength = 32 - str.length
+  if(currentLength > 0) {
+    for(var i = 0; i < currentLength; i++){
+      currentStr = currentStr+"0";
+    }
+  }
+  var buf = Buffer.from(currentStr, 'utf8');
+  const fulfillment_bytes = buf;
+  const myFulfillment = new cc.PreimageSha256();
+  myFulfillment.setPreimage(fulfillment_bytes);
+
+  var fulfillment = myFulfillment.serializeBinary().toString('hex')
+  var condition = myFulfillment.getConditionBinary().toString('hex')
+
+  var bells = {
+    "fulfillment":fulfillment,
+    "condition":condition
+  }
+
+  return bells;
 }
 
 exports.updateWallet = function (address) {
