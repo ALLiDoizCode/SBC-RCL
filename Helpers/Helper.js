@@ -21,7 +21,7 @@ var newWallet = function() {
   return wallet
 }
 
-var walletFromSecret = function(secret) {
+var importWallet = function(secret) {
 
   const keypair = rippleKeyPairs.deriveKeypair(secret);
   const address = rippleKeyPairs.deriveAddress(keypair.publicKey);
@@ -35,10 +35,10 @@ var walletFromSecret = function(secret) {
 
 }
 
-exports.walletFromSecret = walletFromSecret
+exports.importWallet = importWallet
 exports.newWallet = newWallet
 
-exports.encryptString = function(secret,password) {
+/*exports.encryptString = function(secret,password) {
 
   // Encrypt
   var ciphertext = CryptoJS.AES.encrypt(secret, password);
@@ -56,10 +56,10 @@ exports.decryptString = function(encryptedSecret,password) {
     var plaintext = bytes.toString(CryptoJS.enc.Utf8);
     if(IsJsonString(plaintext)) {
       let json = JSON.parse(plaintext);
-      address = walletFromSecret(json.master);
+      address = importWallet(json.master);
       address.regular = json.regular
     }else {
-      address = walletFromSecret(plaintext);
+      address = importWallet(plaintext);
     }
   } catch(e) {
 
@@ -77,7 +77,7 @@ function IsJsonString(str) {
         return false;
     }
     return true;
-}
+}*/
 
 exports.getBells = function() {
   const fulfillment_bytes = randomBytes(32);
@@ -123,7 +123,7 @@ exports.updateWallet = function (address) {
   client.send(function (obj) {
     let drop = parseFloat(obj.result.account_data.Balance);
     let ownerCount = parseFloat(obj.result.account_data.OwnerCount);
-    let xrp = drop / 1000000;
+    let xrp = fromDrops(drop);
     var sequence = obj.result.account_data.Sequence
     let flags = obj.result.account_data.Flags;
     sessionStorage.setItem("xrp", xrp);
@@ -134,9 +134,11 @@ exports.updateWallet = function (address) {
   }, client.router.accountInfo,address)
 }
 
-exports.toHex = function(str) {
+var toHex = function(str) {
   return Buffer.from(str, 'utf8').toString('hex').toUpperCase()
 }
+
+exports.toHex = toHex
 
 exports.toDollor = function(number) {
   return Number(number).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -147,18 +149,19 @@ var toDrops = function(value) {
   return "" + parseInt(drops)
 }
 
+var fromDrops = function(value) {
+  let xrp = parseFloat(value) / 1000000
+  return xrp
+}
+
 exports.toDrops = toDrops
+exports.fromDrops = fromDrops
 
 exports.signTX = function(tx, secret) {
   var keypair = rippleKeyPairs.deriveKeypair(secret);
   const txJSON = JSON.stringify(tx);
   const txSign = sign(txJSON, keypair);
-  console.log(txSign);
   return txSign
-}
-
-exports.submit = function(callback, blob) {
-  client.send(callback,client.router.submit, blob)
 }
 
 exports.createAmount = function(value, currency, issuer) {
@@ -184,21 +187,4 @@ exports.createMemo = function(memos) {
     memoObjects.push(memoObject);
   });
   return memoObjects
-}
-
-exports.createPriceEscrowMemo = function(high, low, highOrLow) {
-  var priceMemo;
-  if (highOrLow === "high") {
-    priceMemo = "SBC Memo: This escrow was created within Harbor with a price-based condition. The user has locked this XRP in escrow until the price reaches $" + toDollor(high) + "/XRP. To learn more or to download Harbor visit https://www.secureblockchains.com"
-  } else if (highOrLow === "low") {
-    priceMemo = "SBC Memo: This escrow was created within Harbor with a price-based condition. The user has locked this XRP in escrow until the price falls below $" + toDollor(low) + "/XRP. To learn more or to download Harbor visit https://www.secureblockchains.com"
-  } else if (highOrLow === "both") {
-    priceMemo = "SBC Memo: This escrow was created within Harbor with a price-based condition. The user has locked this XRP in escrow until the price reaches $" + toDollor(high) + "/XRP or falls below $" + toDollor(low) + "/XRP. To learn more or to download Harbor visit https://www.secureblockchains.com"
-  }
-  return priceMemo
-}
-
-exports.createTimeEscowMemo = function(value) {
-  let timeMemo = "SBC Memo: This escrow was created within Harbor with a time-based condition. To learn more or to download Harbor visit https://www.secureblockchains.com"
-  return timeMemo
 }

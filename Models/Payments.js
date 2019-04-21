@@ -3,10 +3,10 @@ var util = require("../Helpers/Helper");
 
 var exports = module.exports = {};
 
-var payment = function (destination, amount, destinationTag, invoiceID, memos) {
-    var tx = transaction.baseTX("Payment")
-    tx.Destination = destination
-    tx.Amount = amount
+var payment = function (account, destination, amount, fee, sequence, memos, destinationTag, invoiceID) {
+    var tx = transaction.baseTX("Payment", account, fee, sequence)
+    tx.Destination = destination 
+    tx.Amount = util.toDrops(amount)
     if (destinationTag != undefined) {
         tx.DestinationTag
     }
@@ -24,8 +24,8 @@ var payment = function (destination, amount, destinationTag, invoiceID, memos) {
 
 exports.payment = payment
 
-exports.escrowCreate = function (destination, amount, destinationTag, invoiceID, memos) {
-    var tx = payment(destination, amount, destinationTag, invoiceID, memos)
+exports.escrowCreate = function (account, destination, amount, fee, sequence, memos, destinationTag, invoiceID) {
+    var tx = payment(account, destination, amount, fee, sequence, memos, destinationTag, invoiceID)
     tx.TransactionType = "EscrowCreate"
     if (finishAfter != undefined) {
         tx.FinishAfter = finishAfter - 946684800
@@ -48,8 +48,8 @@ exports.escrowCreate = function (destination, amount, destinationTag, invoiceID,
     return tx
 }
 
-exports.escrowFinish = function (owner, offerSequence) {
-    var tx = transaction.baseTX("EscrowFinish")
+exports.escrowFinish = function (owner, account, fee, sequence,offerSequence) {
+    var tx = transaction.baseTX("EscrowFinish", account, fee, sequence)
     tx.Owner = owner
     tx.OfferSequence = offerSequence
 
@@ -67,8 +67,8 @@ exports.escrowFinish = function (owner, offerSequence) {
     return tx
 }
 
-exports.escrowCancel = function (owner, offerSequence) {
-    var tx = transaction.baseTX("EscrowCancel")
+exports.escrowCancel = function (owner, account, fee, sequence, offerSequence) {
+    var tx = transaction.baseTX("EscrowCancel", account, fee, sequence)
     tx.Owner = owner
     tx.OfferSequence = offerSequence
     if (memos != undefined) {

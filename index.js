@@ -22,10 +22,13 @@ exports.accountInfo = function (callback, address) {
 }
 
 exports.history = function (callback, address, currentMarker) {
-    var router = client.router
-    router.endpoint(address, currentMarker)
+    var router = client.router.history
+    router.endpoint = router.endpoint(address, currentMarker)
     client.send(callback, router, "")
 }
-client.send(function(obj){
-    console.log(obj)
-}, client.router.accountInfo, "rGaysYqH1iG7YbUKgcaGCsB5dtJfzjmAA6")
+
+/*{ secret: 'snWVTvX1UvobQJf8KXJipth2M4Cx9',
+  address: 'rKhGZU6vVDtPLafbZAE6L5DUAwMQR6rYPa' } */
+
+  /*rwtNuwjYS3ykdzF4aq79WGiFPzxpb8TAfv
+  shMyTumyXtbJ75LnzrDi39uJTTBrS*/
